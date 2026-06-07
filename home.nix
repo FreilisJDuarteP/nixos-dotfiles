@@ -28,7 +28,7 @@
 
     # JavaScript / Node.js
     nodejs      # Instala Node.js junto con el binario de npm de forma nativa
-  ];
+        ];
 
   # Dejamos que Home Manager se gestione a sí mismo
   programs.home-manager.enable = true;
