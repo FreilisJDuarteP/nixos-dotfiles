@@ -8,15 +8,28 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-        ./modules/nvidia.nix
+      ./modules/nvidia.nix
     ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # --- BOOTLOADER SEGURO Y ACER FIXES ---
+  boot = {
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+    # Use latest kernel.
+    kernelPackages = pkgs.linuxPackages_latest;
+
+    # 1. Parámetro de GRUB/Systemd-boot para el brillo de la pantalla (Intel)
+    kernelParams = [ "acpi_backlight=native" ];
+
+    # 2. Forzar la carga del módulo del teclado Acer
+    kernelModules = [ "acer_wmi" ];
+
+    # 3. Forzar los parámetros del módulo para iluminar el teclado (Initramfs automático)
+    extraModprobeConfig = ''
+      options acer_wmi force_series=1
+    '';
+  };
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -82,7 +95,7 @@
     isNormalUser = true;
     description = "freilis";
     extraGroups = [ "networkmanager" "wheel" ];
-    shell = pkgs.zsh; # <--- CORRECCIÓN 1: Define Zsh como tu shell por defecto
+    shell = pkgs.zsh; # Define Zsh como tu shell por defecto
     packages = with pkgs; [
       kdePackages.kate
     ];
@@ -91,7 +104,7 @@
   # Install firefox.
   programs.firefox.enable = true;
 
-  # CORRECCIÓN 2: Habilita Zsh a nivel de sistema (necesario para la validación de entornos)
+  # Habilita Zsh a nivel de sistema (necesario para la validación de entornos)
   programs.zsh.enable = true;
 
   # Allow unfree packages
