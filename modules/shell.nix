@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   # 1. Configuración principal de Zsh
   programs.zsh = {
     enable = true;
@@ -32,14 +34,18 @@
     enable = true;
     enableZshIntegration = true;
   };
-
+  #direnv neovim
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true; # integración con nix develop
+  };
   # 3. Habilitar y configurar Starship (El prompt monocromático)
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
     settings = {
       add_newline = false;
-      
+
       # Forzar paleta monocromática (blanco y negro)
       character = {
         success_symbol = "[➜](bold white)";

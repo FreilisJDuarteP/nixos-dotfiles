@@ -1,40 +1,37 @@
-{ config, pkgs, ... }:
-
+# home.nix
 {
-  # 1. Importamos tus módulos externos aquí
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./modules/shell.nix
     ./modules/kitty.nix
     ./modules/neovim.nix
-    ./modules/niri.nix # <--- NUEVO: Añadido aquí
+    ./modules/niri.nix
   ];
 
   home.username = "freilis";
   home.homeDirectory = "/home/freilis";
-
-  # Esta versión debe coincidir con la versión de tu sistema
   home.stateVersion = "26.05";
 
-  # 2. Paquetes instalados en el entorno de usuario
   home.packages = with pkgs; [
-    # Utilidades del sistema y terminal
+    # --- UTILIDADES DEL SISTEMA ---
     fastfetch
     nerd-fonts.jetbrains-mono
     wl-clipboard
-
+    ripgrep # requerido por Telescope live_grep
+    fd # mejora búsqueda de archivos en Telescope
+    direnv
+    jq
     # --- ENTORNO DE DESARROLLO ---
-    # Java
-    jdk         # Instala el OpenJDK por defecto del sistema
-    maven       # Gestor de dependencias y construcción para Java
-
-    # JavaScript / Node.js
-    nodejs      # Instala Node.js junto con el binario de npm de forma nativa
+    jdk
+    maven
+    nodejs
   ];
 
-  # Dejamos que Home Manager se gestione a sí mismo
   programs.home-manager.enable = true;
 
-# --- CONFIGURACIÓN GLOBAL DE GIT ---
   programs.git = {
     enable = true;
     settings = {
@@ -42,7 +39,6 @@
         name = "freilisjduartep";
         email = "freilisjduartep@gmail.com";
       };
-      # NUEVO: Esto le dice a Git de manera declarativa que confíe en /etc/nixos
       safe = {
         directory = "/etc/nixos";
       };
