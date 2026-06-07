@@ -156,8 +156,7 @@
     binds {
 
         // --- AYUDA ---
-        Mod+Shift+Slash { show-hotkey-overlay; }
-
+       Mod+F1 { spawn "noctalia-shell" "ipc" "call" "plugin" "togglePanel" "keybind-cheatsheet"; } 
         // --- APLICACIONES ---
         Mod+Return { spawn "kitty"; }
         Mod+T      { spawn "kitty"; }
@@ -316,3 +315,4 @@
     }
   '';
 }
+
