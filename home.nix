@@ -6,6 +6,7 @@
     ./modules/shell.nix
     ./modules/kitty.nix
     ./modules/neovim.nix
+    ./modules/niri.nix # <--- NUEVO: Añadido aquí
   ];
 
   home.username = "freilis";
@@ -28,7 +29,7 @@
 
     # JavaScript / Node.js
     nodejs      # Instala Node.js junto con el binario de npm de forma nativa
-        ];
+  ];
 
   # Dejamos que Home Manager se gestione a sí mismo
   programs.home-manager.enable = true;

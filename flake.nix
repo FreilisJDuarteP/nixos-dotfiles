@@ -11,6 +11,12 @@
 
     # 1. Añadimos el repositorio oficial de NVF
     nvf.url = "github:notashelf/nvf";
+
+    # --- NUEVO: Input oficial de Noctalia Shell v4 ---
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
@@ -27,7 +33,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             
-            # 2. Le pasamos los 'inputs' a Home Manager para que pueda leer NVF
+            # Le pasamos los 'inputs' a Home Manager para que pueda leer NVF y Noctalia
             home-manager.extraSpecialArgs = { inherit inputs; };
             
             home-manager.users.freilis = import ./home.nix;

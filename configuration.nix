@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 
 {
@@ -106,6 +102,13 @@
 
   # Habilita Zsh a nivel de sistema (necesario para la validación de entornos)
   programs.zsh.enable = true;
+
+  # --- NUEVO: HABILITAR NIRI WINDOW MANAGER ---
+  programs.niri.enable = true;
+
+  # --- NUEVO: SERVICIOS REQUERIDOS POR NOCTALIA v4 ---
+  services.upower.enable = true;
+  services.power-profiles-daemon.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
