@@ -1,7 +1,10 @@
 # modules/niri.nix
-{ config, pkgs, inputs, ... }:
-
 {
+  config,
+  pkgs,
+  inputs,
+  ...
+}: {
   home.packages = [
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.brightnessctl
@@ -162,8 +165,7 @@
         Mod+Return hotkey-overlay-title="Terminal (kitty)" { spawn "kitty"; }
         Mod+T      hotkey-overlay-title="Terminal (kitty)" { spawn "kitty"; }
         Mod+B      hotkey-overlay-title="Navegador (Firefox)" { spawn "firefox"; }
-        Mod+E      hotkey-overlay-title="Archivos (Dolphin)" { spawn "dolphin"; }
-
+        Mod+E hotkey-overlay-title="Archivos (Thunar)" { spawn "thunar"; }
         // #Noctalia
         Mod+Space     hotkey-overlay-title="Lanzador de apps" { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
         Mod+A         hotkey-overlay-title="Centro de control" { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }

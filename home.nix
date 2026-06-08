@@ -15,22 +15,44 @@
   home.homeDirectory = "/home/freilis";
   home.stateVersion = "26.05";
 
+  home.sessionVariables = {
+    JAVA_HOME = "${pkgs.jdk}";
+  };
+
   home.packages = with pkgs; [
     # --- UTILIDADES DEL SISTEMA ---
     fastfetch
     nerd-fonts.jetbrains-mono
     wl-clipboard
-    ripgrep # requerido por Telescope live_grep
-    fd # mejora búsqueda de archivos en Telescope
-    direnv
+    ripgrep
+    fd
     jq
+
+    # --- GESTOR DE ARCHIVOS ---
+    thunar
+    thunar-archive-plugin
+    tumbler
+    ffmpegthumbnailer
+    file-roller
+
     # --- ENTORNO DE DESARROLLO ---
     jdk
     maven
     nodejs
+    netbeans
+    jetbrains.idea
+
+    # --- SOFTWARE PERSONAL ---
+    ankama-launcher
+    bitwig-studio
   ];
 
   programs.home-manager.enable = true;
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
 
   programs.git = {
     enable = true;
@@ -42,6 +64,14 @@
       safe = {
         directory = "/etc/nixos";
       };
+    };
+  };
+
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
     };
   };
 }

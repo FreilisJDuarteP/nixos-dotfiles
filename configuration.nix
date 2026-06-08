@@ -1,6 +1,9 @@
 # configuration.nix
-{ config, pkgs, ... }:
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     ./modules/nvidia.nix
@@ -11,8 +14,8 @@
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ "acpi_backlight=native" ];
-    kernelModules = [ "acer_wmi" ];
+    kernelParams = ["acpi_backlight=native"];
+    kernelModules = ["acer_wmi"];
     extraModprobeConfig = ''
       options acer_wmi force_series=1
     '';
@@ -26,15 +29,15 @@
   time.timeZone = "America/Bogota";
   i18n.defaultLocale = "es_CO.UTF-8";
   i18n.extraLocaleSettings = {
-    LC_ADDRESS        = "es_CO.UTF-8";
+    LC_ADDRESS = "es_CO.UTF-8";
     LC_IDENTIFICATION = "es_CO.UTF-8";
-    LC_MEASUREMENT    = "es_CO.UTF-8";
-    LC_MONETARY       = "es_CO.UTF-8";
-    LC_NAME           = "es_CO.UTF-8";
-    LC_NUMERIC        = "es_CO.UTF-8";
-    LC_PAPER          = "es_CO.UTF-8";
-    LC_TELEPHONE      = "es_CO.UTF-8";
-    LC_TIME           = "es_CO.UTF-8";
+    LC_MEASUREMENT = "es_CO.UTF-8";
+    LC_MONETARY = "es_CO.UTF-8";
+    LC_NAME = "es_CO.UTF-8";
+    LC_NUMERIC = "es_CO.UTF-8";
+    LC_PAPER = "es_CO.UTF-8";
+    LC_TELEPHONE = "es_CO.UTF-8";
+    LC_TIME = "es_CO.UTF-8";
   };
 
   # --- DISPLAY / ESCRITORIO ---
@@ -63,14 +66,14 @@
   # --- BLUETOOTH ---
   hardware.bluetooth = {
     enable = true;
-    powerOnBoot = false;
+    powerOnBoot = true;
   };
 
   # --- USUARIO ---
   users.users."freilis" = {
     isNormalUser = true;
     description = "freilis";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = ["networkmanager" "wheel"];
     shell = pkgs.zsh;
     packages = with pkgs; [
       kdePackages.kate
@@ -85,10 +88,10 @@
   # --- SERVICIOS DE NOCTALIA ---
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
-
+  services.tumbler.enable = true;
   # --- NIX ---
   nixpkgs.config.allowUnfree = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # --- PAQUETES DEL SISTEMA ---
   # git y mpv se mantienen a nivel sistema para disponibilidad global
