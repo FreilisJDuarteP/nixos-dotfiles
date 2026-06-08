@@ -99,6 +99,7 @@
   environment.systemPackages = with pkgs; [
     git
     mpv
+    pciutils
   ];
 
   system.stateVersion = "26.05";
