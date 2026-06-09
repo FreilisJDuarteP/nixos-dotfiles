@@ -41,9 +41,16 @@
   };
 
   # --- DISPLAY / ESCRITORIO ---
-  services.xserver.enable = true;
-  services.displayManager.sddm.enable = true;
+  services.xserver.enable = true; # Necesario para compatibilidad con Xwayland
+
+  # SDDM con soporte nativo para Wayland (Recomendado para Plasma 6)
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
+
   services.desktopManager.plasma6.enable = true;
+
   services.xserver.xkb = {
     layout = "es";
     variant = "";
@@ -54,6 +61,7 @@
   services.printing.enable = true;
 
   # --- AUDIO ---
+  # Pipewire se habilita por defecto con Plasma 6, pero mantenerlo explícito no hace daño
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -83,24 +91,23 @@
   # --- PROGRAMAS DEL SISTEMA ---
   programs.firefox.enable = true;
   programs.zsh.enable = true;
-  programs.niri.enable = true;
+  programs.niri.enable = true; # Habilita Niri a nivel de sistema
 
-  # --- SERVICIOS DE NOCTALIA ---
+  # --- SERVICIOS ---
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
-  services.tumbler.enable = true;
+  services.tumbler.enable = true; # Servicio a nivel de sistema (recuerda quitarlo de home.nix)
+
   # --- NIX ---
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # --- PAQUETES DEL SISTEMA ---
-  # git y mpv se mantienen a nivel sistema para disponibilidad global
-  # kitty se gestiona via home-manager en modules/niri.nix
   environment.systemPackages = with pkgs; [
     git
     mpv
     pciutils
   ];
 
-  system.stateVersion = "26.05";
+  system.stateVersion = "26.05"; # Mantén este valor tal cual lo tenías
 }

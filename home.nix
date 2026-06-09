@@ -2,6 +2,7 @@
 {
   config,
   pkgs,
+  inputs,
   ...
 }: {
   imports = [
@@ -19,6 +20,25 @@
     JAVA_HOME = "${pkgs.jdk}";
   };
 
+  # ⭐ AHORA SÍ FUNCIONA porque importamos el módulo en flake.nix
+  programs.noctalia = {
+    enable = true;
+    #systemd.enable = true; # Habilita el servicio systemd
+
+    settings = {
+      theme = {
+        mode = "dark";
+        source = "builtin";
+        builtin = "Catppuccin";
+      };
+
+      wallpaper = {
+        enabled = true;
+        default.path = "/home/freilis/Imágenes/wallpaper.png"; # Ajusta esta ruta
+      };
+    };
+  };
+
   home.packages = with pkgs; [
     # --- UTILIDADES DEL SISTEMA ---
     fastfetch
@@ -31,7 +51,6 @@
     # --- GESTOR DE ARCHIVOS ---
     thunar
     thunar-archive-plugin
-    tumbler
     ffmpegthumbnailer
     file-roller
 

@@ -5,15 +5,14 @@
   inputs,
   ...
 }: {
-  home.packages = [
-    inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
-    pkgs.brightnessctl
-    pkgs.imagemagick
-    pkgs.pavucontrol
-    pkgs.xwayland-satellite
-    pkgs.grim
-    pkgs.slurp
-    pkgs.playerctl
+  home.packages = with pkgs; [
+    brightnessctl
+    imagemagick
+    pavucontrol
+    xwayland-satellite
+    grim
+    slurp
+    playerctl
   ];
 
   home.file.".config/niri/config.kdl".text = ''
@@ -51,7 +50,7 @@
     // LAYOUT
     // ================================================================
     layout {
-        gaps 8
+        gaps 4
         center-focused-column "never"
 
         preset-column-widths {
@@ -106,7 +105,7 @@
     }
 
     // ================================================================
-    // REGLAS DE VENTANA
+    // REGLAS DE VENTANA (ACTUALIZADO PARA NOCTALIA v5)
     // ================================================================
     window-rule {
         geometry-corner-radius 10
@@ -119,6 +118,14 @@
         open-floating true
     }
 
+    // Ventana de configuración de Noctalia flotante
+    window-rule {
+        match app-id="dev.noctalia.Noctalia.Settings"
+        open-floating true
+        default-column-width { fixed 1080; }
+        default-window-height { fixed 920; }
+    }
+
     // ================================================================
     // DEBUG (requerido por Noctalia)
     // ================================================================
@@ -127,15 +134,29 @@
     }
 
     // ================================================================
-    // LAYER RULES
+    // LAYER RULES (ACTUALIZADO PARA NOCTALIA v5)
     // ================================================================
     layer-rule {
-        match namespace="^noctalia-overview*"
+        match namespace="^noctalia-backdrop"
         place-within-backdrop true
     }
 
+    layer-rule {
+        match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+        background-effect {
+            xray false
+        }
+    }
+
+    blur {
+        passes 2
+        offset 3.0
+        noise 0.03
+        saturation 1.0
+    }
+
     // ================================================================
-    // ENVIRONMENT
+    // ENVIRONMENT (con variables para NVIDIA + Wayland)
     // ================================================================
     environment {
         DISPLAY ":0"
@@ -144,40 +165,44 @@
         XDG_SESSION_DESKTOP "niri"
         QT_QPA_PLATFORM "wayland"
         MOZ_ENABLE_WAYLAND "1"
+        LIBVA_DRIVER_NAME "nvidia"
+        GBM_BACKEND "nvidia-drm"
+        __GLX_VENDOR_LIBRARY_NAME "nvidia"
+        NVD_BACKEND "egl"
+        WLR_NO_HARDWARE_CURSORS "1"
     }
 
     // ================================================================
     // AUTOSTART
     // ================================================================
     spawn-at-startup "xwayland-satellite"
-    spawn-at-startup "noctalia-shell"
+    spawn-at-startup "noctalia"
     spawn-at-startup "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
 
     // ================================================================
-    // KEYBINDS
+    // KEYBINDS (CORREGIDO - SIN CONFLICTOS)
     // ================================================================
     binds {
-
         // #Ayuda
-        Mod+F1 hotkey-overlay-title="Atajos de teclado" { spawn "noctalia-shell" "ipc" "call" "plugin" "togglePanel" "keybind-cheatsheet"; }
 
         // #Aplicaciones
         Mod+Return hotkey-overlay-title="Terminal (kitty)" { spawn "kitty"; }
         Mod+T      hotkey-overlay-title="Terminal (kitty)" { spawn "kitty"; }
         Mod+B      hotkey-overlay-title="Navegador (Firefox)" { spawn "firefox"; }
-        Mod+E hotkey-overlay-title="Archivos (Thunar)" { spawn "thunar"; }
-        // #Noctalia
-        Mod+Space     hotkey-overlay-title="Lanzador de apps" { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-        Mod+A         hotkey-overlay-title="Centro de control" { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
-        Mod+Backslash hotkey-overlay-title="Configuración" { spawn "noctalia-shell" "ipc" "call" "settings" "toggle"; }
-        Mod+X         hotkey-overlay-title="Menú de sesión" { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
+        Mod+E      hotkey-overlay-title="Archivos (Thunar)" { spawn "thunar"; }
+
+        // #Noctalia (CORREGIDO - SIN CONFLICTOS)
+        Mod+Space     hotkey-overlay-title="Lanzador de apps" { spawn-sh "noctalia msg panel-toggle launcher"; }
+        Mod+S         hotkey-overlay-title="Centro de control" { spawn-sh "noctalia msg panel-toggle control-center"; }
+        Mod+F1     hotkey-overlay-title="Configuración" { spawn-sh "noctalia msg settings-toggle"; }
+        Mod+Shift+Q     hotkey-overlay-title="Menú de sesión (Apagar/Reiniciar)" { spawn-sh "noctalia msg panel-toggle session "; } // ⭐ MENÚ DE APAGADO
 
         // #Sistema
         Mod+Q             repeat=false hotkey-overlay-title="Cerrar ventana" { close-window; }
         Mod+Shift+E       repeat=false hotkey-overlay-title="Salir de niri" { quit; }
         Mod+Shift+P       hotkey-overlay-title="Apagar monitores" { power-off-monitors; }
         Mod+Escape        allow-inhibiting=false hotkey-overlay-title="Alternar inhibidor de atajos" { toggle-keyboard-shortcuts-inhibit; }
-        Super+Alt+L       hotkey-overlay-title="Bloquear pantalla" { spawn "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
+        Mod+Shift+Comma   hotkey-overlay-title="Bloquear pantalla" { spawn-sh "noctalia msg session lock"; }
 
         // #Navegación
         Mod+Tab   repeat=false hotkey-overlay-title="Vista general" { toggle-overview; }
@@ -283,17 +308,17 @@
         Ctrl+Print hotkey-overlay-title="Captura de pantalla" { screenshot-screen; }
         Alt+Print  hotkey-overlay-title="Captura de ventana" { screenshot-window; }
 
-        // #Audio y brillo
-        XF86AudioRaiseVolume  allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "increase"; }
-        XF86AudioLowerVolume  allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "decrease"; }
-        XF86AudioMute         allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
-        XF86AudioMicMute      allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "muteInput"; }
+        // #Audio y brillo (SEGÚN DOCUMENTACIÓN OFICIAL)
+        XF86AudioRaiseVolume  allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
+        XF86AudioLowerVolume  allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
+        XF86AudioMute         allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
+        XF86AudioMicMute      allow-when-locked=true { spawn-sh "noctalia msg volume-mute-input"; }
         XF86AudioPlay         allow-when-locked=true { spawn "playerctl" "play-pause"; }
         XF86AudioStop         allow-when-locked=true { spawn "playerctl" "stop"; }
         XF86AudioPrev         allow-when-locked=true { spawn "playerctl" "previous"; }
         XF86AudioNext         allow-when-locked=true { spawn "playerctl" "next"; }
-        XF86MonBrightnessUp   allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "brightness" "increase"; }
-        XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
+        XF86MonBrightnessUp   allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
+        XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
     }
   '';
 }
