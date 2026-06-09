@@ -13,6 +13,8 @@
     grim
     slurp
     playerctl
+    # ⭐ Polkit temporal (cambiar con XFCE)
+    polkit_gnome
   ];
 
   home.file.".config/niri/config.kdl".text = ''
@@ -177,14 +179,13 @@
     // ================================================================
     spawn-at-startup "xwayland-satellite"
     spawn-at-startup "noctalia"
-    spawn-at-startup "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
+    //⭐ Cambiado de KDE polkit a GNOME polkit (temporal hasta XFCE)
+    spawn-at-startup "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
     // ================================================================
     // KEYBINDS (CORREGIDO - SIN CONFLICTOS)
     // ================================================================
     binds {
-        // #Ayuda
-
         // #Aplicaciones
         Mod+Return hotkey-overlay-title="Terminal (kitty)" { spawn "kitty"; }
         Mod+T      hotkey-overlay-title="Terminal (kitty)" { spawn "kitty"; }
@@ -194,8 +195,8 @@
         // #Noctalia (CORREGIDO - SIN CONFLICTOS)
         Mod+Space     hotkey-overlay-title="Lanzador de apps" { spawn-sh "noctalia msg panel-toggle launcher"; }
         Mod+S         hotkey-overlay-title="Centro de control" { spawn-sh "noctalia msg panel-toggle control-center"; }
-        Mod+F1     hotkey-overlay-title="Configuración" { spawn-sh "noctalia msg settings-toggle"; }
-        Mod+Shift+Q     hotkey-overlay-title="Menú de sesión (Apagar/Reiniciar)" { spawn-sh "noctalia msg panel-toggle session "; } // ⭐ MENÚ DE APAGADO
+        Mod+F1        hotkey-overlay-title="Configuración" { spawn-sh "noctalia msg settings-toggle"; }
+        Mod+Shift+Q   hotkey-overlay-title="Menú de sesión (Apagar/Reiniciar)" { spawn-sh "noctalia msg panel-toggle session"; }
 
         // #Sistema
         Mod+Q             repeat=false hotkey-overlay-title="Cerrar ventana" { close-window; }
