@@ -205,48 +205,56 @@
   };
 
   # ============================================================
-  # GIT - Control de versiones con autenticación completa
+  # GIT - Control de versiones (Sintaxis moderna HM 24.05+)
   # ============================================================
   programs.git = {
     enable = true;
 
-    # Información del usuario
-    userName = "freilisjduartep";
-    userEmail = "freilisjduartep@gmail.com";
+    # ⭐ Toda la configuración va dentro de 'settings'
+    settings = {
+      # Información del usuario
+      user = {
+        name = "freilisjduartep";
+        email = "freilisjduartep@gmail.com";
+      };
 
-    # ⭐ CREDENTIAL HELPER - Guarda credenciales de forma segura
-    # Usa libsecret (GNOME Keyring) para almacenar credenciales
-    extraConfig = {
+      # ⭐ CREDENTIAL HELPER - Guarda credenciales de forma segura
       credential = {
         helper = "libsecret";
       };
+
+      # Configuración de repositorios
       init = {
         defaultBranch = "main";
       };
+
       pull = {
         rebase = true; # Usar rebase en lugar de merge al hacer pull
       };
+
       push = {
         autoSetupRemote = true; # Configurar remote automáticamente al hacer push
       };
+
       core = {
         editor = "nvim"; # Editor por defecto para commits
         autocrlf = "input"; # Manejo de saltos de línea
       };
+
       safe = {
         directory = "/etc/nixos"; # Marcar /etc/nixos como seguro
       };
-    };
 
-    # ⭐ ALIAS ÚTILES
-    aliases = {
-      st = "status";
-      br = "branch";
-      co = "checkout";
-      ci = "commit";
-      lg = "log --oneline --graph --decorate";
-      last = "log -1 HEAD";
-      unstage = "reset HEAD --";
+      # ⭐ ALIAS ÚTILES
+      alias = {
+        st = "status";
+        br = "branch";
+        co = "checkout";
+        ci = "commit";
+        lg = "log --oneline --graph --decorate";
+        last = "log -1 HEAD";
+        unstage = "reset HEAD --";
+      };
     };
 
     # ⭐ IGNORES GLOBALES
@@ -264,15 +272,32 @@
   programs.ssh = {
     enable = true;
 
-    # Configuración específica para GitHub
-    # ⚠️ NOTA: "UseKeychain" es solo para macOS, NO funciona en Linux
-    extraConfig = ''
-      Host github.com
-        HostName github.com
-        User git
-        IdentityFile ~/.ssh/id_ed25519
-        AddKeysToAgent yes
-    '';
+    # ⭐ Deshabilitar configuración por defecto para evitar warnings futuros
+    enableDefaultConfig = false;
+
+    # Configuración manual de valores por defecto
+    settings = {
+      "*" = {
+        AddKeysToAgent = "yes";
+        Compression = "no";
+        ControlMaster = "no";
+        ControlPath = "~/.ssh/master-%r@%n:%p";
+        ControlPersist = "no";
+        ForwardAgent = "no";
+        HashKnownHosts = "no";
+        ServerAliveCountMax = 3;
+        ServerAliveInterval = 0;
+        UserKnownHostsFile = "~/.ssh/known_hosts";
+      };
+
+      # Configuración específica para GitHub
+      "github.com" = {
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519";
+        AddKeysToAgent = "yes";
+      };
+    };
   };
 
   # ============================================================
