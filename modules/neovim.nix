@@ -1,14 +1,25 @@
-# modules/neovim.nix
+# /etc/nixos/modules/neovim.nix
+# ============================================================
+# CONFIGURACIÓN DE NEOVIM - NVF
+# ============================================================
+# 🎨 TEMA: GitHub Dark (el que te encanta)
+# 💻 Stack: CSS, HTML, JS, Node.js, React, Java + Spring Boot
+# ============================================================
 {
   inputs,
   pkgs,
   ...
 }: {
   imports = [inputs.nvf.homeManagerModules.default];
+
   programs.nvf = {
     enable = true;
+
     settings = {
       vim = {
+        # ============================================================
+        # OPCIONES BÁSICAS
+        # ============================================================
         options = {
           clipboard = "unnamedplus";
           relativenumber = true;
@@ -24,13 +35,24 @@
           shada = "!,'100,<50,s10,h";
         };
 
+        # ============================================================
+        # 🎨 TEMA - GITHUB DARK (el que te encanta)
+        # ============================================================
         theme = {
           enable = true;
           name = "github";
-          style = "dark_default";
+          style = "dark_default"; # ⭐ GitHub Dark oficial
           transparent = false;
         };
-        statusline.lualine.enable = true;
+
+        # ============================================================
+        # INTERFAZ
+        # ============================================================
+        statusline.lualine = {
+          enable = true;
+          theme = "github_dark"; # Lualine con tema GitHub
+        };
+
         tabline.nvimBufferline.enable = true;
         telescope.enable = true;
         binds.whichKey.enable = true;
@@ -42,19 +64,33 @@
           rainbow-delimiters.enable = true;
         };
 
+        # ============================================================
+        # AUTOCOMPLETADO
+        # ============================================================
         autocomplete.nvim-cmp.enable = true;
 
+        # ============================================================
+        # LSP
+        # ============================================================
         lsp = {
           enable = true;
           formatOnSave = true;
         };
 
+        # ============================================================
+        # GIT
+        # ============================================================
         git = {
           enable = true;
-          gitsigns.enable = true;
-          gitsigns.codeActions.enable = true;
+          gitsigns = {
+            enable = true;
+            codeActions.enable = true;
+          };
         };
 
+        # ============================================================
+        # UTILIDADES
+        # ============================================================
         autopairs.nvim-autopairs.enable = true;
         comments.comment-nvim.enable = true;
 
@@ -84,32 +120,28 @@
           direnv.enable = true;
         };
 
+        # ============================================================
+        # LENGUAJES
+        # ============================================================
         languages = {
           enableTreesitter = true;
           enableFormat = true;
 
-          nix.enable = true;
+          # Nix (para tus configs)
+          nix = {
+            enable = true;
+            lsp.enable = true;
+            format.enable = true;
+          };
 
+          # Java + Spring Boot + Maven/Gradle + Lombok
           java = {
             enable = true;
             lsp.enable = true;
             treesitter.enable = true;
           };
 
-          bash = {
-            enable = true;
-            lsp.enable = true;
-            treesitter.enable = true;
-            format.enable = true;
-          };
-
-          lua = {
-            enable = true;
-            lsp.enable = true;
-            treesitter.enable = true;
-            format.enable = true;
-          };
-
+          # JavaScript/TypeScript/React/Node.js
           typescript = {
             enable = true;
             lsp.enable = true;
@@ -117,23 +149,48 @@
             format.enable = true;
           };
 
+          # CSS
           css = {
             enable = true;
             lsp.enable = true;
             treesitter.enable = true;
+            format.enable = true;
           };
 
+          # HTML
           html = {
             enable = true;
+            lsp.enable = true;
             treesitter.enable = true;
+            format.enable = true;
           };
 
+          # Bash
+          bash = {
+            enable = true;
+            lsp.enable = true;
+            treesitter.enable = true;
+            format.enable = true;
+          };
+
+          # Lua
+          lua = {
+            enable = true;
+            lsp.enable = true;
+            treesitter.enable = true;
+            format.enable = true;
+          };
+
+          # Markdown
           markdown = {
             enable = true;
             treesitter.enable = true;
           };
         };
 
+        # ============================================================
+        # KEYMAPS
+        # ============================================================
         keymaps = [
           # --- ARCHIVO ---
           {
@@ -200,9 +257,6 @@
             action = ":close<CR>";
             desc = "Cerrar split";
           }
-          # <C-h/j/k/l>         → mover entre splits    (smart-splits)
-          # <A-h/j/k/l>         → redimensionar splits  (smart-splits)
-          # <leader><leader>h/j/k/l → intercambiar buffers (smart-splits)
 
           # --- TERMINAL ---
           {

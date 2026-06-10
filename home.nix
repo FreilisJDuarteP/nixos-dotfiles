@@ -2,6 +2,9 @@
 # ============================================================
 # CONFIGURACIÓN DE USUARIO - Home Manager
 # ============================================================
+# 🎨 TEMA PRINCIPAL: GitHub Dark / Catppuccin Mocha
+# 💻 Stack: CSS, HTML, JS, Node.js, React, Java + Spring Boot
+# ============================================================
 {
   config,
   pkgs,
@@ -12,10 +15,10 @@
   # MÓDULOS IMPORTADOS
   # ============================================================
   imports = [
-    ./modules/shell.nix # Zsh, Starship, Eza
-    ./modules/kitty.nix # Terminal Kitty
-    ./modules/neovim.nix # Editor NVF
-    ./modules/niri.nix # Window Manager Niri
+    ./modules/shell.nix
+    ./modules/kitty.nix
+    ./modules/neovim.nix
+    ./modules/niri.nix
   ];
 
   # ============================================================
@@ -30,23 +33,17 @@
   # ============================================================
   home.sessionVariables = {
     JAVA_HOME = "${pkgs.jdk}";
-
-    # ⭐ CURSOR - Bibata Modern Ice (funciona perfecto en Wayland/Niri)
     XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE = "24";
-
-    # ⭐ VARIABLES PARA WAYLAND
-    # Fuerzan a las aplicaciones a usar Wayland nativo cuando sea posible
-    GDK_BACKEND = "wayland,x11"; # GTK apps
-    QT_QPA_PLATFORM = "wayland;xcb"; # Qt apps
-    SDL_VIDEODRIVER = "wayland"; # Juegos/SDL
-    MOZ_ENABLE_WAYLAND = "1"; # Firefox
+    GDK_BACKEND = "wayland,x11";
+    QT_QPA_PLATFORM = "wayland;xcb";
+    SDL_VIDEODRIVER = "wayland";
+    MOZ_ENABLE_WAYLAND = "1";
   };
 
   # ============================================================
-  # CARPETAS XDG (Documentos, Descargas, etc)
+  # CARPETAS XDG
   # ============================================================
-  # Crea automáticamente las carpetas estándar del usuario
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
@@ -71,9 +68,6 @@
   gtk = {
     enable = true;
 
-    # ─────────────────────────────────────────────────────────
-    # 🎨 TEMA GTK - CATPPUCCIN MOCHA (Coherente con Noctalia)
-    # ─────────────────────────────────────────────────────────
     theme = {
       name = "catppuccin-mocha-blue-standard+normal";
       package = pkgs.catppuccin-gtk.override {
@@ -84,32 +78,23 @@
       };
     };
 
-    # ─────────────────────────────────────────────────────────
-    # 📁 ICONOS - PAPIRUS DARK (Excelente con Catppuccin)
-    # ─────────────────────────────────────────────────────────
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
 
-    # ─────────────────────────────────────────────────────────
-    # 🖱️ CURSOR - BIBATA MODERN ICE (Recomendado para Wayland)
-    # ─────────────────────────────────────────────────────────
     cursorTheme = {
       name = "Bibata-Modern-Ice";
       package = pkgs.bibata-cursors;
       size = 24;
     };
 
-    # ─────────────────────────────────────────────────────────
-    # 🌙 FORZAR TEMA OSCURO en apps GTK3 y GTK4
-    # ─────────────────────────────────────────────────────────
     gtk3.extraConfig = {gtk-application-prefer-dark-theme = 1;};
     gtk4.extraConfig = {gtk-application-prefer-dark-theme = 1;};
   };
 
   # ============================================================
-  # NOCTALIA - Shell para Niri
+  # NOCTALIA
   # ============================================================
   programs.noctalia = {
     enable = true;
@@ -127,125 +112,107 @@
   };
 
   # ============================================================
-  # PAQUETES DEL USUARIO (por categoría)
+  # PAQUETES DEL USUARIO
   # ============================================================
   home.packages = with pkgs; [
     # ─────────────────────────────────────────────────────────
     # 🔧 UTILIDADES DEL SISTEMA
     # ─────────────────────────────────────────────────────────
-    fastfetch # Info del sistema al abrir terminal
-    nerd-fonts.jetbrains-mono # Fuente para terminal
-    wl-clipboard # Portapapeles para Wayland
-    ripgrep # Buscador rápido (reemplazo de grep)
-    fd # Buscador de archivos (reemplazo de find)
-    jq # Procesador de JSON en terminal
-    unzip # Descompresor ZIP
-    zip # Compresor ZIP
-    unrar # Descompresor RAR
+    fastfetch
+    nerd-fonts.jetbrains-mono
+    wl-clipboard
+    ripgrep
+    fd
+    jq
+    unzip
+    zip
+    unrar
 
     # ─────────────────────────────────────────────────────────
     # 📁 GESTOR DE ARCHIVOS
     # ─────────────────────────────────────────────────────────
-    thunar # Gestor de archivos principal
-    thunar-archive-plugin # Integración con archivos comprimidos
-    thunar-volman # Montaje automático de USBs
-    ffmpegthumbnailer # Miniaturas de videos en Thunar
-    file-roller # Gestor gráfico de archivos comprimidos
-    tumbler # Servicio de miniaturas para Thunar
+    thunar
+    thunar-archive-plugin
+    thunar-volman
+    ffmpegthumbnailer
+    file-roller
+    tumbler
 
     # ─────────────────────────────────────────────────────────
-    # 💻 DESARROLLO - JAVA / MAVEN
+    # 💻 DESARROLLO - JAVA / MAVEN / GRADLE
     # ─────────────────────────────────────────────────────────
-    jdk # Java Development Kit
-    maven # Gestor de builds Java
-    netbeans # IDE para Java
+    jdk
+    maven
+    gradle
+    netbeans
+    jdt-language-server
+    lombok
 
     # ─────────────────────────────────────────────────────────
-    # 💻 DESARROLLO - WEB / JAVASCRIPT
+    # 💻 DESARROLLO - WEB / JAVASCRIPT / TYPESCRIPT / REACT
     # ─────────────────────────────────────────────────────────
-    nodejs # Runtime de JavaScript
-    yarn # Gestor de paquetes alternativo a npm
+    # ⭐ ACTUALIZADO: nodePackages eliminado en nixpkgs reciente
+    nodejs
+    yarn
+    typescript
+    typescript-language-server
+    prettier
+    eslint
+
+    # ─────────────────────────────────────────────────────────
+    # 💻 DESARROLLO - HTML / CSS
+    # ─────────────────────────────────────────────────────────
+    vscode-langservers-extracted
+    stylelint
 
     # ─────────────────────────────────────────────────────────
     # 💻 DESARROLLO - IDE
     # ─────────────────────────────────────────────────────────
-    jetbrains.idea # IntelliJ IDEA
+    jetbrains.idea
 
     # ─────────────────────────────────────────────────────────
     # 🎵 MULTIMEDIA Y CREACIÓN
     # ─────────────────────────────────────────────────────────
-    bitwig-studio # DAW para producción musical
-    vlc # Reproductor multimedia adicional
-    ffmpeg # Conversor/procesador de video/audio
+    bitwig-studio
+    vlc
+    ffmpeg
 
     # ─────────────────────────────────────────────────────────
     # 🎮 JUEGOS / PERSONAL
     # ─────────────────────────────────────────────────────────
-    ankama-launcher # Launcher de juegos Ankama (Dofus, Wakfu)
-
-    # ─────────────────────────────────────────────────────────
-    # 🌐 NAVEGACIÓN / COMUNICACIÓN
-    # ─────────────────────────────────────────────────────────
-    # Firefox ya está en configuration.nix (nivel sistema)
-    # discord             # Comunicación (descomentar si lo usas)
-    # telegram-desktop    # Mensajería (descomentar si lo usas)
+    ankama-launcher
   ];
 
   # ============================================================
   # HERRAMIENTAS DE DESARROLLO
   # ============================================================
-
-  # Home Manager
   programs.home-manager.enable = true;
 
-  # Direnv - Cargar variables de entorno automáticamente por proyecto
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
   };
 
   # ============================================================
-  # GIT - Control de versiones (Sintaxis moderna HM 24.05+)
+  # GIT
   # ============================================================
   programs.git = {
     enable = true;
 
-    # ⭐ Toda la configuración va dentro de 'settings'
     settings = {
-      # Información del usuario
       user = {
         name = "freilisjduartep";
         email = "freilisjduartep@gmail.com";
       };
-
-      # ⭐ CREDENTIAL HELPER - Guarda credenciales de forma segura
-      credential = {
-        helper = "libsecret";
-      };
-
-      # Configuración de repositorios
-      init = {
-        defaultBranch = "main";
-      };
-
-      pull = {
-        rebase = true; # Usar rebase en lugar de merge al hacer pull
-      };
-
-      push = {
-        autoSetupRemote = true; # Configurar remote automáticamente al hacer push
-      };
-
+      credential.helper = "libsecret";
+      init.defaultBranch = "main";
+      pull.rebase = true;
+      push.autoSetupRemote = true;
       core = {
-        editor = "nvim"; # Editor por defecto para commits
-        autocrlf = "input"; # Manejo de saltos de línea
+        editor = "nvim";
+        autocrlf = "input";
       };
-
-      safe = {
-        directory = "/etc/nixos"; # Marcar /etc/nixos como seguro
-      };
-
-      # ⭐ ALIAS ÚTILES
+      safe.directory = "/etc/nixos";
       alias = {
         st = "status";
         br = "branch";
@@ -257,7 +224,6 @@
       };
     };
 
-    # ⭐ IGNORES GLOBALES
     ignores = [
       "*~"
       "*.swp"
@@ -267,15 +233,12 @@
   };
 
   # ============================================================
-  # SSH - Configuración de claves SSH para GitHub
+  # SSH
   # ============================================================
   programs.ssh = {
     enable = true;
-
-    # ⭐ Deshabilitar configuración por defecto para evitar warnings futuros
     enableDefaultConfig = false;
 
-    # Configuración manual de valores por defecto
     settings = {
       "*" = {
         AddKeysToAgent = "yes";
@@ -290,7 +253,6 @@
         UserKnownHostsFile = "~/.ssh/known_hosts";
       };
 
-      # Configuración específica para GitHub
       "github.com" = {
         HostName = "github.com";
         User = "git";
@@ -301,7 +263,7 @@
   };
 
   # ============================================================
-  # GNUPG - Para firmar commits (opcional pero recomendado)
+  # GNUPG
   # ============================================================
   programs.gpg = {
     enable = true;
