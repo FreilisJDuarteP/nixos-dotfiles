@@ -1,25 +1,42 @@
-# modules/niri.nix
+# /etc/nixos/modules/niri.nix
+# ============================================================
+# CONFIGURACIÓN DE NIRI - Compositor Wayland
+# ============================================================
 {
   config,
   pkgs,
   inputs,
   ...
 }: {
+  # ============================================================
+  # PAQUETES ESPECÍFICOS DE NIRI
+  # ============================================================
   home.packages = with pkgs; [
-    brightnessctl
-    imagemagick
-    pavucontrol
-    xwayland-satellite
-    grim
-    slurp
-    playerctl
-    # ⭐ Polkit temporal (cambiar con XFCE)
-    polkit_gnome
+    # --- Control de hardware ---
+    brightnessctl # Control de brillo de pantalla
+
+    # --- Capturas de pantalla ---
+    grim # Captura regiones Wayland
+    slurp # Selector de región para grim
+    imagemagick # Procesamiento de imágenes
+
+    # --- Audio ---
+    pavucontrol # Control gráfico de volumen
+    playerctl # Control de reproductores multimedia
+
+    # --- Xwayland (para apps X11) ---
+    xwayland-satellite # Bridge X11/Wayland
+
+    # --- Autenticación ---
+    polkit_gnome # Agente Polkit (diálogos de contraseña)
   ];
 
+  # ============================================================
+  # ARCHIVO DE CONFIGURACIÓN DE NIRI
+  # ============================================================
   home.file.".config/niri/config.kdl".text = ''
     // ================================================================
-    // INPUT
+    // INPUT - Teclado, touchpad y mouse
     // ================================================================
     input {
         keyboard {
@@ -42,14 +59,14 @@
     }
 
     // ================================================================
-    // OUTPUT
+    // OUTPUT - Configuración de pantallas
     // ================================================================
     output "eDP-1" {
         scale 1.0
     }
 
     // ================================================================
-    // LAYOUT
+    // LAYOUT - Diseño de columnas y ventanas
     // ================================================================
     layout {
         gaps 4
@@ -84,12 +101,12 @@
     }
 
     // ================================================================
-    // PREFER-NO-CSD
+    // PREFER-NO-CSD - Forzar decoraciones del servidor
     // ================================================================
     prefer-no-csd
 
     // ================================================================
-    // SCREENSHOTS
+    // SCREENSHOTS - Ruta de capturas
     // ================================================================
     screenshot-path "~/Imágenes/Capturas/Screenshot %Y-%m-%d %H-%M-%S.png"
 
@@ -107,7 +124,7 @@
     }
 
     // ================================================================
-    // REGLAS DE VENTANA (ACTUALIZADO PARA NOCTALIA v5)
+    // REGLAS DE VENTANA
     // ================================================================
     window-rule {
         geometry-corner-radius 10
@@ -120,7 +137,6 @@
         open-floating true
     }
 
-    // Ventana de configuración de Noctalia flotante
     window-rule {
         match app-id="dev.noctalia.Noctalia.Settings"
         open-floating true
@@ -129,14 +145,14 @@
     }
 
     // ================================================================
-    // DEBUG (requerido por Noctalia)
+    // DEBUG
     // ================================================================
     debug {
         honor-xdg-activation-with-invalid-serial
     }
 
     // ================================================================
-    // LAYER RULES (ACTUALIZADO PARA NOCTALIA v5)
+    // LAYER RULES (para Noctalia)
     // ================================================================
     layer-rule {
         match namespace="^noctalia-backdrop"
@@ -158,7 +174,7 @@
     }
 
     // ================================================================
-    // ENVIRONMENT (con variables para NVIDIA + Wayland)
+    // ENVIRONMENT - Variables para NVIDIA + Wayland
     // ================================================================
     environment {
         DISPLAY ":0"
@@ -175,15 +191,14 @@
     }
 
     // ================================================================
-    // AUTOSTART
+    // AUTOSTART - Aplicaciones al iniciar Niri
     // ================================================================
     spawn-at-startup "xwayland-satellite"
     spawn-at-startup "noctalia"
-    //⭐ Cambiado de KDE polkit a GNOME polkit (temporal hasta XFCE)
     spawn-at-startup "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
     // ================================================================
-    // KEYBINDS (CORREGIDO - SIN CONFLICTOS)
+    // KEYBINDS - Atajos de teclado
     // ================================================================
     binds {
         // #Aplicaciones
@@ -192,17 +207,17 @@
         Mod+B      hotkey-overlay-title="Navegador (Firefox)" { spawn "firefox"; }
         Mod+E      hotkey-overlay-title="Archivos (Thunar)" { spawn "thunar"; }
 
-        // #Noctalia (CORREGIDO - SIN CONFLICTOS)
+        // #Noctalia
         Mod+Space     hotkey-overlay-title="Lanzador de apps" { spawn-sh "noctalia msg panel-toggle launcher"; }
         Mod+S         hotkey-overlay-title="Centro de control" { spawn-sh "noctalia msg panel-toggle control-center"; }
         Mod+F1        hotkey-overlay-title="Configuración" { spawn-sh "noctalia msg settings-toggle"; }
-        Mod+Shift+Q   hotkey-overlay-title="Menú de sesión (Apagar/Reiniciar)" { spawn-sh "noctalia msg panel-toggle session"; }
+        Mod+Shift+Q   hotkey-overlay-title="Menú de sesión" { spawn-sh "noctalia msg panel-toggle session"; }
 
         // #Sistema
         Mod+Q             repeat=false hotkey-overlay-title="Cerrar ventana" { close-window; }
         Mod+Shift+E       repeat=false hotkey-overlay-title="Salir de niri" { quit; }
         Mod+Shift+P       hotkey-overlay-title="Apagar monitores" { power-off-monitors; }
-        Mod+Escape        allow-inhibiting=false hotkey-overlay-title="Alternar inhibidor de atajos" { toggle-keyboard-shortcuts-inhibit; }
+        Mod+Escape        allow-inhibiting=false hotkey-overlay-title="Alternar inhibidor" { toggle-keyboard-shortcuts-inhibit; }
         Mod+Shift+Comma   hotkey-overlay-title="Bloquear pantalla" { spawn-sh "noctalia msg session lock"; }
 
         // #Navegación
@@ -309,7 +324,7 @@
         Ctrl+Print hotkey-overlay-title="Captura de pantalla" { screenshot-screen; }
         Alt+Print  hotkey-overlay-title="Captura de ventana" { screenshot-window; }
 
-        // #Audio y brillo (SEGÚN DOCUMENTACIÓN OFICIAL)
+        // #Audio y brillo (vía Noctalia)
         XF86AudioRaiseVolume  allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
         XF86AudioLowerVolume  allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
         XF86AudioMute         allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
