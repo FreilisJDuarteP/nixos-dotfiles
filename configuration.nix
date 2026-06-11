@@ -5,6 +5,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   imports = [
@@ -68,15 +69,12 @@
   # ============================================================
   # DISPLAY MANAGER - LY (minimalista y rápido)
   # ============================================================
-  # Ly es un display manager ligero en TUI que funciona perfecto
-  # con sesiones Wayland sin los problemas de SDDM + NVIDIA
-  services.xserver.enable = true; # Necesario para compatibilidad con Xwayland
+  services.xserver.enable = true;
   services.displayManager.ly = {
     enable = true;
-    # Configuración para tema oscuro
     settings = {
-      animation = "matrix"; # Animación al iniciar (matrix, none)
-      hide_borders = false; # Mostrar bordes de las cajas
+      animation = "matrix";
+      hide_borders = false;
       blank_box = false;
     };
   };
@@ -84,55 +82,79 @@
   # ============================================================
   # SESIONES DISPONIBLES
   # ============================================================
-  programs.niri.enable = true; # Niri como compositor Wayland
+  programs.niri.enable = true;
 
   # ============================================================
   # SERVICIOS ESENCIALES PARA WAYLAND PURO
   # ============================================================
-  # Sin DE necesitamos habilitar manualmente servicios que
-  # XFCE/KDE inician por nosotros
-
-  # Audio (Pipewire - reemplaza PulseAudio)
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa = {
       enable = true;
-      support32Bit = true; # Para Steam/Wine
+      support32Bit = true;
     };
     pulse.enable = true;
     wireplumber.enable = true;
   };
 
-  # Bluetooth
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
   };
 
-  # Gestión de energía (batería, perfiles)
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
 
-  # Montaje de USBs y gestión de discos (para Thunar)
-  services.gvfs.enable = true; # Virtual filesystem para Trash, redes, etc
-  services.udisks2.enable = true; # Montaje automático de dispositivos
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;
 
-  # Portales XDG (para que apps puedan abrir archivos, elegir tema, etc)
+  # Portales XDG
+  # lib.mkForce necesario porque programs.niri.enable ya define
+  # config.niri.default = "gnome;gtk" y entra en conflicto
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
     ];
-    config.common.default = "*";
+    config.niri.default = lib.mkForce ["gtk"];
+    config.common.default = ["gtk"];
   };
 
-  # Keyring para guardar contraseñas (Firefox, Discord, etc)
   services.gnome.gnome-keyring.enable = true;
-
-  # Impresión
   services.printing.enable = true;
+
+  # ============================================================
+  # NIX-LD - Compatibilidad con ejecutables Linux genéricos
+  # ============================================================
+  # Necesario para Zed, Dofus y otros binarios no empaquetados
+  # para NixOS. Después de activar por primera vez: cerrar sesión
+  # y volver a entrar para propagar las variables de entorno.
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+      zlib
+      libGL
+      SDL2
+      openssl
+      curl
+      libpulseaudio
+      alsa-lib
+      udev
+      dbus
+      vulkan-loader
+      wayland
+      libxkbcommon
+      fontconfig
+      freetype
+      libx11
+      libxcursor
+      libxrandr
+      libxi
+    ];
+  };
 
   # ============================================================
   # USUARIO
@@ -156,17 +178,12 @@
   # PAQUETES DEL SISTEMA (disponibles para todos los usuarios)
   # ============================================================
   environment.systemPackages = with pkgs; [
-    # --- Herramientas básicas del sistema ---
     git
     vim
     pciutils
     htop
-
-    # --- Multimedia del sistema ---
-    mpv # Reproductor de video ligero
-
-    # --- Tema de cursor (necesario a nivel sistema para Niri) ---
-    bibata-cursors # Cursor moderno que funciona perfecto en Wayland
+    mpv
+    bibata-cursors
   ];
 
   # ============================================================
@@ -175,7 +192,6 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
-    # Habilitar caché binario (acelera compilaciones)
     substituters = ["https://cache.nixos.org/"];
   };
 

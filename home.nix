@@ -29,6 +29,15 @@
   home.stateVersion = "26.05";
 
   # ============================================================
+  # PATH DE USUARIO
+  # ============================================================
+  # ~/.local/bin se usa para binarios instalados manualmente
+  # fuera de Nix (Zed, Ankama, etc.)
+  home.sessionPath = [
+    "$HOME/.local/bin"
+  ];
+
+  # ============================================================
   # VARIABLES DE ENTORNO
   # ============================================================
   home.sessionVariables = {
@@ -39,6 +48,9 @@
     QT_QPA_PLATFORM = "wayland;xcb";
     SDL_VIDEODRIVER = "wayland";
     MOZ_ENABLE_WAYLAND = "1";
+    # Necesario para que Zed y otras apps encuentren los datos
+    # de teclado en NixOS (no existe /usr/share/X11/xkb)
+    XKB_CONFIG_ROOT = "${pkgs.xkeyboard_config}/share/X11/xkb";
   };
 
   # ============================================================
@@ -180,7 +192,11 @@
     # ─────────────────────────────────────────────────────────
     # 🎮 JUEGOS / PERSONAL
     # ─────────────────────────────────────────────────────────
-    ankama-launcher
+    # appimage-run: para ejecutar AppImages (Ankama launcher)
+    # steam-run: entorno FHS para binarios genéricos (Dofus.x64)
+    # Zed y Ankama se instalan manualmente en ~/.local/bin/
+    appimage-run
+    steam-run
   ];
 
   # ============================================================
